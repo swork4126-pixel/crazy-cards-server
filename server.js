@@ -42,9 +42,16 @@ function play(r,p,index,color){
  else next(r);
  broadcast(r);
 }
+const fs=require('fs');
+const path=require('path');
 const server=http.createServer((req,res)=>{
- res.writeHead(200,{'content-type':'text/plain','access-control-allow-origin':'*'});
- res.end('Crazy Cards game server online');
+ if(req.url==='/'||req.url==='/index.html'){
+  res.writeHead(200,{'content-type':'text/html; charset=utf-8','cache-control':'no-cache'});
+  fs.createReadStream(path.join(__dirname,'index.html')).pipe(res);
+ }else if(req.url==='/health'){
+  res.writeHead(200,{'content-type':'text/plain'});
+  res.end('Crazy Cards game server online');
+ }else{res.writeHead(404);res.end('Not found')}
 });
 const wss=new WebSocketServer({server,maxPayload:4096});
 wss.on('connection',ws=>{
